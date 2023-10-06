@@ -1,51 +1,46 @@
-question_data = [
-    {"category": "Entertainment: Music", "type": "multiple", "difficulty": "easy",
-     "question": "What is not a wind instrument?", "correct_answer": "Viola",
-     "incorrect_answers": ["Oboe", "Trombone", "Duduk"]},
-    {"category": "General Knowledge", "type": "multiple", "difficulty": "medium",
-     "question": "What does the 'G' mean in 'G-Man'?",
-     "correct_answer": "Government",
-     "incorrect_answers": ["Going", "Ghost", "Geronimo"]},
-    {"category": "Entertainment: Board Games", "type": "multiple",
-     "difficulty": "medium",
-     "question": "What special item did the creators of Cards Against Humanity ship for their Black Friday pack?",
-     "correct_answer": "Bull Feces",
-     "incorrect_answers": ["A Card Expansion", "A Racist Toy", "Cat Urine"]},
-    {"category": "Entertainment: Video Games", "type": "multiple",
-     "difficulty": "medium",
-     "question": "Which of these is NOT a game under the Worms series?",
-     "correct_answer": "Major Malfunction",
-     "incorrect_answers": ["Crazy Golf", "Clan Wars", "Ultimate Mayhem"]},
-    {"category": "Entertainment: Music", "type": "multiple", "difficulty": "hard",
-     "question": "The key of sharps does the key of G# minor contain?",
-     "correct_answer": "5", "incorrect_answers": ["3", "7", "0"]},
-    {"category": "Entertainment: Video Games", "type": "boolean",
-     "difficulty": "medium",
-     "question": "Mortal Kombat was almost based on Jean-Claude Van Damme movie.",
-     "correct_answer": "True", "incorrect_answers": ["False"]},
-    {"category": "History", "type": "multiple", "difficulty": "medium",
-     "question": "What was the unofficial name for Germany between 1919 and 1933?",
-     "correct_answer": "Weimar Republic",
-     "incorrect_answers": ["German Democratic Republic", "Federal Republic of Germany",
-                           "Oesterreich "]},
-    {"category": "Politics", "type": "multiple", "difficulty": "medium",
-     "question": "What was the personal nickname of the 40th Governor of the US State Louisiana, Huey Long?",
-     "correct_answer": "The Kingfish",
-     "incorrect_answers": ["The Champ", "The Hoot Owl", "The Oracle"]},
-    {"category": "Entertainment: Video Games", "type": "multiple",
-     "difficulty": "hard",
-     "question": "What is the plane of existence in MicroProse&#039;s 1997 'Magic the Gathering'?",
-     "correct_answer": "Shandalar",
-     "incorrect_answers": ["Theros", "Ravnica", "Amonkhet"]},
-    {"category": "General Knowledge", "type": "multiple", "difficulty": "easy",
-     "question": "What is the Zodiac symbol for Gemini?", "correct_answer": "Twins",
-     "incorrect_answers": ["Fish", "Scales", "Maiden"]},
-    {"category": "Entertainment: Music", "type": "multiple", "difficulty": "medium",
-     "question": "What was Britney Spears' debut single?",
-     "correct_answer": "...Baby One More Time",
-     "incorrect_answers": ["Oops!... I Did It Again", "(You Drive Me) Crazy",
-                           "Toxic"]},
-    {"category": "Entertainment: Comics", "type": "multiple", "difficulty": "easy",
-     "question": "When was Marvel Comics founded?", "correct_answer": "1939",
-     "incorrect_answers": ["1932", "1951", "1936"]}
-]
+import requests
+
+from question import Question
+
+
+class Data:
+    number_of_questions: int
+    difficulty: str
+    category: str
+    question_data: list[dict]
+    response_code: int
+
+    def __init__(self, number_of_questions, difficulty, category):
+        self.question_data = []
+        self.number_of_questions = number_of_questions
+        self.difficulty = difficulty
+        self.category = category
+
+    def query_data(self):
+        payload = {
+            'amount': self.number_of_questions,
+            'type': 'multiple',
+            'category': self.category,
+            'difficulty': self.difficulty
+        }
+
+        r = requests.get(f'https://opentdb.com/api.php?', params=payload)
+        json = r.json()
+        self.response_code = int(json["response_code"])
+        self.question_data = json["results"]
+
+    def get_questions(self):
+
+        questions = []
+
+        for entry in self.question_data:
+            questions.append(
+                Question(
+                    text=entry["question"],
+                    correct_answer=entry["correct_answer"],
+                    incorrect_answers=entry["incorrect_answers"]))
+
+        return questions
+
+    def get_response_code(self):
+        return self.response_code

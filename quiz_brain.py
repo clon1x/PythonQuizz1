@@ -14,7 +14,7 @@ def get_answers(question):
 def make_answers_text(answers):
     answers_text = ''
     for i in range(len(answers)):
-        answers_text += f'\n{i+1}: {answers[i]["text"]}'
+        answers_text += f'\n{i + 1}: {answers[i]["text"]}'
     return answers_text
 
 

@@ -1,22 +1,14 @@
-from question import Question
-from data import question_data
+from data import Data
 from quiz_brain import QuizBrain
 
 
-question_bank = []
+question_bank = Data(number_of_questions=12, difficulty='', category='')
+question_bank.query_data()
 
-for question in question_data:
-    question_bank.append(
-        Question(
-            text=question["question"],
-            correct_answer=question["correct_answer"],
-            incorrect_answers=question["incorrect_answers"]
-        ))
+print(f'Response code: {question_bank.get_response_code()}')
+print(question_bank.get_questions())
 
-del question
-del question_data
-
-brain = QuizBrain(question_bank)
+brain = QuizBrain(question_bank.get_questions())
 
 while brain.more_questions():
     q = brain.next_question()
